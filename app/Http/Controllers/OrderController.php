@@ -15,7 +15,7 @@ class OrderController extends Controller
     public function completeorder(Request $request){
         $orderid=$request->orderid;
         $order=Order::find($orderid);
-        $order->timeofcompletion = Carbon\Carbon::now();
+        $order->timeofcompletion = Carbon::now();
         $order->isCompleted=1;
         $order->save();
         return response()->json([
