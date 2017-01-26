@@ -13,34 +13,34 @@ use App\OrderDrink;
 
 class OrderDrinkController extends Controller
 {
+
     public function orderdetail(){
-        $orders=Order::all();
-        foreach($orders as $order){
-            $collection=collect($order);
-            $id=$collection->get('id');
-            $timeoforder=$collection->get('timeoforder');
-            $timeofcompletion=$collection->get('timeofcollection');
-            $iscompleted=$collection->get('isCompleted');
-            if($iscompleted=='no'){
-            $tableid=$collection->get('table_id');
-            $table=Table::where('id',$tableid)->first();
-            $tableno=$table->number;
-            $drinkorders=OrderDrink::where('id',$id)->get();
+        $orders=Order::where('isCompleted',0)->orderBy('id','asc')->get();
+        $collectionp= array();
+        foreach($orders as $order){           
+            $orderid=$order->id;
+            $timeoforder=$order->timeoforder;
+
+            $tableno=Table::find($order->table_id)->number;
+            $drinkorders=OrderDrink::where('order_id',$orderid)->get();
+            
+            $collectionk=array();
             foreach($drinkorders as $drinkorder){
                 $quantity=$drinkorder->quantity;
-                $id=$drinkorder->drink_id;
-                $drink=Drink::where('id',$id)->first();
-                $name=$drink->name;
-                $collectionk[]=collect(['drinkname'=>$name,'quantity'=>$quantity]);
-                }
-            $collectionp[]=collect(['drinkdetails'=>$collectionk,'orderid'=>$id,'timeofcompletion'=>$timeofcompletion,'timeoforder'=>$timeoforder,'iscompleted'=>$iscompleted,'tableno'=>$tableno]);
+                $drinkname=Drink::find($drinkorder->drink_id)->name;
+                $collectionk[]=collect(['drinkname'=>$drinkname,'quantity'=>$quantity]);
             }
+            if(count($drinkorders)>0){
+                $collectionp[]=collect([
+                    'drinkdetails'=>$collectionk,
+                    'orderid'=>$orderid,
+                    'timeoforder'=>$timeoforder,
+                    'tableno'=>$tableno]);
+            }
+           
             
         }
         return response()->json($collectionp);
         
-
-    	
-
     }
 }

@@ -10,7 +10,9 @@
 | to using a Closure or controller method. Build something great!
 |
 */
+Route::get('/', 'WebsiteController@showLogin');
+Route::post('/','WebsiteController@postLogin');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/dashboard','WebsiteController@dashboard');
+
+Route::get('/orders','WebsiteController@history');
